@@ -1,8 +1,6 @@
 package com.example.dagger2test
 
-import dagger.MembersInjector
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 /**
