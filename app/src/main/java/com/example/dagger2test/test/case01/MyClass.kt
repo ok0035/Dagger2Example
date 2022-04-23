@@ -51,14 +51,22 @@ class MyClass {
     var str: String? = null
         @Inject set
 
+    //non-null일 경우 아래와 같이 사용
     @Named("hello")
     @Inject
     lateinit var strHello: String
 
-
+    //nullable하게 사용할 경우 아래와 같이 사용
     @Named("world")
     @Inject
-    lateinit var strWorld: String
+    @JvmField // getter/setter를 생성하지 않고 필드를 직접 노출시켜 사용하도록 하게 함
+    internal var strWorld: String? = null
+    /* internal -> java와 달리 패키지 가시성이 없기 때문에 internal을 사용하여 같은 모듈 내에서만
+    *             사용할 수 있도록 만들어주는 키워드
+    *
+    * 즉 jvm필드를 선언하여 필드를 직접 노출시키고, 같은 모듈 내에서만 볼 수 있게 함으로써 캡슐화(?)한 모습
+    *
+    *  */
 
 
     @Hello
