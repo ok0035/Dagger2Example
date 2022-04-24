@@ -1,6 +1,9 @@
 package com.example.dagger2test
 
 
+import com.example.dagger2test.inout.Animal2
+import com.example.dagger2test.inout.Cat
+import com.example.dagger2test.inout.Dog
 import com.example.dagger2test.test.case01.DaggerMyComponent
 import com.example.dagger2test.test.case01.MyClass
 import com.example.dagger2test.test.case01.MyComponent
@@ -83,18 +86,22 @@ class ExampleUnitTest {
 
     @Test
     fun testLazy() {
+        println("testLazy start")
         val component: CounterComponent = DaggerCounterComponent.create()
         val counter = Counter()
         component.inject(counter)
         counter.printLazy()
+        println("testLazy end")
     }
 
     @Test
     fun testProvider() {
+        println("test provider start")
         val component: CounterComponent = DaggerCounterComponent.create()
         val counter = Counter()
         component.inject(counter)
         counter.printProvider()
+        println("test provider end")
     }
 
     @Test
@@ -114,50 +121,66 @@ class ExampleUnitTest {
 
     @Test
     fun testObjectIdentity() {
+        println("testObjectIdentity start")
+        println("singleton으로 객체를 생성함\nReusable 이용하면 재사용 가능하면 재사용하고 아닐 경우 새로 생성함")
         val myComponent: MyComponent = DaggerMyComponent.create()
         val temp1 = myComponent.`object`
         val temp2 = myComponent.`object`
         println(temp1.hashCode())
-        println(temp2.hashCode())
+        println(temp2.hashCode()) // 각 객체의 주소값을 이용하여 해쉬코드를 반환함 객체가 같은지 다른지 판별 가능
         println(temp1 === temp2)
         Assert.assertEquals(temp1, temp2)
+        println("testObjectIdentity end")
     }
 
     @Test
     fun testFoo() {
+        println("testFoo start")
         val foo = Foo()
         DaggerStrComponent.create().inject(foo)
+        println("daggerStrComponent -> ${foo.str?.isPresent}")
+        println("daggerStrComponent -> ${foo.str?.get()}")
         Assert.assertTrue(foo.str!!.isPresent)
         Assert.assertNotNull(foo.str!!.get())
+
         DaggerNoStrComponent.create().inject(foo)
         Assert.assertFalse(foo.str!!.isPresent)
+        println("daggerStrComponent -> ${foo.str?.isPresent}")
+        //println("daggerStrComponent -> ${foo.str?.get()}")
         //foo.str.get(); 호출시 NoSuchElementException 발생
+        println("testFoo end")
     }
 
     @Test
     fun testBindsInstance() {
+        println("testBindsInstance start")
         val hello = "Hello World"
         val foo2 = Foo2()
         val component: BindsComponent = DaggerBindsComponent.builder()
             .setString(hello)!!.build()
         component.inject(foo2)
         println(foo2.str)
+        println("testBindsInstance end")
     }
 
     @Test
     fun testMultibindingSet() {
+        println("testMultibindingSet start")
         val foo3 = Foo3()
         DaggerSetComponent.create().inject(foo3)
         foo3.print()
+        println("testMultibindingSet end")
     }
 
     @Test
     fun testMultibindingMap() {
+        println("testMultibindingMap start")
         val component: MapComponent = DaggerMapComponent.create()
         val value = component.longsByString!!["foo"]!!
         val str = component.stringsByClass!![Foo::class.java]
         Assert.assertEquals(100, value)
         Assert.assertEquals("Foo String", str)
+        println("testMultibindingMap end")
     }
 
     @Test
@@ -188,7 +211,7 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testAbstractMultibinds() {
+    fun testAbstractMultiBinds() {
         val component: MultibindsComponent = DaggerMultibindsComponent.create()
         //비어 있음
         for (s in component.strings!!) {
@@ -207,5 +230,40 @@ class ExampleUnitTest {
         componentB.inject(foo4)
         Assert.assertEquals("String from ModuleA", foo4.str)
         Assert.assertEquals(100, foo4.integer)
+    }
+
+    @Test
+    fun testInOut() {
+        println("Generic's In/Out Keyword test")
+
+        /*
+        * out 키워드는 공변성 막기 위함
+        * Cat은 Animal2를 상속받고 있지만
+        * Array<Cat>은 Array<Animal2>를 상속받고 있지 않기 때문에 컴파일 에러
+        * 불변성(Invariance) 때문에 컴파일 에러
+        * 불변성은 코드의 안정성(개 배열에 고양이가 들어가는 등)을 위해 필요하지만 만능은 아니다
+        * 불변성을 공변성(Covariance)으로 바꿔주기 위한 키워드 -> out
+        *
+        * 아무 키워드도 사용하지 않은 경우 -> invariance
+        * out keyword -> read 가능 write 불가능 -> covariance
+        * in keyword -> write 가능 read 불가능 -> contravariance
+        * */
+
+        var animalList:Array<in Animal2> = arrayOf(Animal2(), Animal2(), Animal2()) //쓰기 가능
+        val catList:Array<out Cat> = arrayOf(Cat(), Cat(), Cat()) //읽기 가능
+
+        copyAnimalFromTo(animalList, catList)
+        println("===")
+    }
+
+    //in -> any가 animal2를 상속받도록 변경
+    //out -> Cat이 Animal2를 상속받고 있다면 Class<Cat> 이 Class<Animal2>를 상속받도록 해준다. Array<Cat> -> Array<Animal2>
+    private fun copyAnimalFromTo(from: Array<in Animal2>, to:Array<out Animal2>) {
+        from.forEachIndexed { i, _ ->
+            from[i] = to[i]   //from(in) -> write 가능, read 불가능 클래스의 상속관계가 반대로 설정되어 Any가 Animal2를 상속 받게 되었다.
+//            to[i] = from[i] //to(out) -> write 불가능, read 가능 out keyword로 인해 out T가 되어 어떤 값이 들어오는지 알 수 없게 되었다.
+            (from[i] as Animal2).printSound()
+        }
+        from[0] = Cat()
     }
 }

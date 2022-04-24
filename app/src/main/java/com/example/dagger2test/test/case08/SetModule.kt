@@ -61,6 +61,6 @@ class SetModule {
     @Provides
     @ElementsIntoSet
     fun provideSet(): Set<String> {
-        return HashSet(Arrays.asList("Charles", "Runa"))
+        return HashSet(listOf("Charles", "Runa"))
     }
 }
