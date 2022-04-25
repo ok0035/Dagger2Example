@@ -185,13 +185,16 @@ class ExampleUnitTest {
 
     @Test
     fun testCustomMapKey() {
+        println("testCustomMapKey start")
         val component: MapKeyComponent = DaggerMapKeyComponent.create()
         val cat = component.stringsByAnimal!![Animal.CAT]
         val dog = component.stringsByAnimal!![Animal.DOG]
         val number = component.stringsByNumber!![Float::class.java]
+        println("cat -> $cat\ndog -> $dog\nnumber -> $number")
         Assert.assertEquals("Meow", cat)
         Assert.assertEquals("Bow-wow", dog)
         Assert.assertEquals("100f", number)
+        println("testCustomMapKey end")
     }
 
     @Test
@@ -249,21 +252,21 @@ class ExampleUnitTest {
         * in keyword -> write 가능 read 불가능 -> contravariance
         * */
 
-        var animalList:Array<in Animal2> = arrayOf(Animal2(), Animal2(), Animal2()) //쓰기 가능
-        val catList:Array<out Cat> = arrayOf(Cat(), Cat(), Cat()) //읽기 가능
+        var animalList:Array<Animal2> = arrayOf(Animal2(), Animal2(), Animal2()) //쓰기 가능
+        val catList:Array<Cat> = arrayOf(Cat(), Cat(), Cat()) //읽기 가능
 
-        copyAnimalFromTo(animalList, catList)
+        copyAnimalFromTo(catList, animalList)
         println("===")
     }
 
     //in -> any가 animal2를 상속받도록 변경
     //out -> Cat이 Animal2를 상속받고 있다면 Class<Cat> 이 Class<Animal2>를 상속받도록 해준다. Array<Cat> -> Array<Animal2>
-    private fun copyAnimalFromTo(from: Array<in Animal2>, to:Array<out Animal2>) {
+    private fun copyAnimalFromTo(from: Array<out Animal2>, to:Array<in Animal2>) {
         from.forEachIndexed { i, _ ->
-            from[i] = to[i]   //from(in) -> write 가능, read 불가능 클래스의 상속관계가 반대로 설정되어 Any가 Animal2를 상속 받게 되었다.
+            to[i] = from[i]   //from(in) -> write 가능, read 불가능 클래스의 상속관계가 반대로 설정되어 Any가 Animal2를 상속 받게 되었다.
 //            to[i] = from[i] //to(out) -> write 불가능, read 가능 out keyword로 인해 out T가 되어 어떤 값이 들어오는지 알 수 없게 되었다.
-            (from[i] as Animal2).printSound()
+            (to[i] as Animal2).printSound()
         }
-        from[0] = Cat()
+        to[0] = Cat()
     }
 }
