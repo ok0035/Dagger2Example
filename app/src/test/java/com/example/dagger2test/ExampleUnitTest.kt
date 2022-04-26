@@ -1,6 +1,7 @@
 package com.example.dagger2test
 
 
+import com.example.dagger2test.dragonball.Songoku
 import com.example.dagger2test.inout.Animal2
 import com.example.dagger2test.inout.Cat
 import com.example.dagger2test.inout.Dog
@@ -268,5 +269,16 @@ class ExampleUnitTest {
             (to[i] as Animal2).printSound()
         }
         to[0] = Cat()
+    }
+
+    @Test
+    fun testSongoku() {
+        val songoku = Songoku()
+        println("나는 ${songoku.character.name}이다!!!")
+        println("HP -> ${songoku.character.hp}")
+        println("KI -> ${songoku.character.ki}")
+        println("Skil -> ${songoku.kamehameha}")
+        println("Skil -> ${songoku.solarFlare}")
+        println("Skil -> ${songoku.teleportation}")
     }
 }
