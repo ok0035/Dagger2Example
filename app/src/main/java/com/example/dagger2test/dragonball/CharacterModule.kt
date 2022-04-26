@@ -7,21 +7,9 @@ import dagger.Provides
 class CharacterModule {
 
     @Provides
-    @Name
-    fun provideName(): String?{
-        return "손오공"
-    }
-
-    @Provides
-    @HP
-    fun provideHP(): Int {
-        return 100
-    }
-
-    @Provides
-    @Ki
-    fun provideKi(): Long{
-        return 150000000
+    @Walk
+    fun provideWalk(): String {
+        return "터벅 터벅..."
     }
 
 }

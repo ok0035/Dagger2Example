@@ -1,7 +1,6 @@
-package com.example.dagger2test.dragonball
+package com.example.dagger2test.dragonball.songoku
 
 import dagger.Component
-import dagger.Subcomponent
 
 @Component(modules = [SongokuModule::class])
 interface SongokuComponent {

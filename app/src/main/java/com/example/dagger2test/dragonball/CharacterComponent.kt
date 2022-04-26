@@ -1,16 +1,18 @@
 package com.example.dagger2test.dragonball
 
+import dagger.Component
 import dagger.Subcomponent
 
-@Subcomponent(modules = [CharacterModule::class])
+@Component(modules = [CharacterModule::class])
 interface CharacterComponent {
 
-    fun inject(character: Character)
+    @Walk
+    fun provideBehavior(): String
 
-    @Subcomponent.Builder
-    interface Builder {
-        fun setCharacterModule(characterModule: CharacterModule): Builder
-        fun build(): CharacterComponent
-    }
+//    @Subcomponent.Builder
+//    interface Builder {
+//        fun setCharacterModule(characterModule: CharacterModule): Builder
+//        fun build(): CharacterComponent
+//    }
 
 }
